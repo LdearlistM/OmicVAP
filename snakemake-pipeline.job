@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --job-name=snakemake-pipeline
+#SBATCH -N 1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH -o sp.%j.out
+#SBATCH -e sp.%j.err
+
+source ~/.bashrc
+source activate snakemake
+
+cd /home/data/CYM/pipeline/
+
+snakemake --use-conda --use-singularity --cores 16 --verbose --singularity-args '-B /home/data/CYM/pipeline/database/SGVFinder/db_path:/opt/SGVFinder/src/db_path'
