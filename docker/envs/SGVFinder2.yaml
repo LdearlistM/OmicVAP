@@ -102,4 +102,3 @@ dependencies:
       - sgvfinder2==0.0.1
       - tqdm==4.67.0
       - urllib3==2.2.3
-prefix: /home/data/CYM/miniforge3/envs/SGVFinder2
