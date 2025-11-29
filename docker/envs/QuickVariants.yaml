@@ -113,4 +113,3 @@ dependencies:
   - xorg-libxtst=1.2.5=hb9d3cd8_3
   - xz=5.4.6=h5eee18b_1
   - zstd=1.5.6=ha6fb4c9_0
-prefix: /home/data/CYM/miniforge3/envs/quickvariants
