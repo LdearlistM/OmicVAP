@@ -29,21 +29,14 @@ logging.info("Starting SGVFinder2 ICRA script.")
 
 try:
     # --- Get Inputs/Parameters ---
-    # read1 = snakemake.input.R1 # Use named input
-    # read2 = snakemake.input.R2 # Use named input
     read1 = snakemake.params.fq1
     read2_param = snakemake.params.fq2
     read2 = None if read2_param.lower() == 'none' else read2_param
     db_index_main_file_in_container = snakemake.input.db_index_file
     DATABASE = db_index_main_file_in_container.replace(".1.bt2", "")
     
-    # DATABASE = snakemake.params.database
     output_dir = snakemake.params.output_dir
     smp_output_file = snakemake.output.smp_file # Use named output
-    
-    
-
-    
 
     logging.info(f"Input R1: {read1}")
     logging.info(f"Input R2: {read2}")
