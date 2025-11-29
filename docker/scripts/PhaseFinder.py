@@ -10,7 +10,6 @@ import pandas as pd
 from Bio import SeqIO
 from Bio.SeqUtils import gc_fraction
 
-
 def run_cmd(cmd):
     p = subprocess.Popen(
         cmd,
@@ -23,12 +22,10 @@ def run_cmd(cmd):
     output = p.communicate()[0]
     return output
 
-
 def is_tool(name):
     """Check whether `name` is on PATH."""
     from distutils.spawn import find_executable
     return find_executable(name) is not None
-
 
 def process(infile):
     df = pd.read_table(infile, sep="\t", names=("ID", "dir", "count"))
@@ -41,11 +38,9 @@ def process(infile):
     df.reset_index().fillna(0)
     return df
 
-
 @click.group()
 def main():
     pass
-
 
 @main.command(help="Locate putative inverted regions")
 @click.option(
@@ -215,7 +210,6 @@ def locate(fasta, tab, einv, mismatch, irsize, gcratio, polymer):
                 )
     os.remove(tmpout + ".pos.tab")
 
-
 @main.command(help="Create inverted fasta file")
 @click.option(
     "-f",
@@ -288,7 +282,6 @@ def create(fasta, tab, flanksize, inv):
     cmd = """ bowtie-build {genome} {genome} """.format(genome=inv)
     print("****** NOW RUNNING COMMAND ******: " + cmd)
     run_cmd(cmd)
-
 
 @main.command(help="Align reads to inverted fasta file")
 @click.option(
@@ -374,7 +367,6 @@ def ratio(inv, fastq1, fastq2, threads, output):
     )
     print("****** NOW RUNNING COMMAND ******: " + cmd)
     run_cmd(cmd)
-
 
 if __name__ == "__main__":
     for i in ["bowtie", "samtools", "sam2bed", "einverted"]:
