@@ -84,4 +84,3 @@ dependencies:
   - xz=5.4.6=h5eee18b_1
   - zlib=1.2.13=h5eee18b_1
   - zstd=1.4.9=haebb681_0
-prefix: /home/data/CYM/mambaforge/envs/kneaddata-latest
