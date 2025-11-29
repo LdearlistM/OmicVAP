@@ -1,14 +1,26 @@
-kneaddata_db: /home/data/CYM/pipeline/database/kneaddata/hg_38
-trimmomatic_path: /home/data/CYM/software/trim_tools
-trimmomatic_options: "SLIDINGWINDOW:4:20 MINLEN:50 LEADING:3 TRAILING:3"
+raw_data_dir: "/pipeline/rawdata/"
+results_dir: "/pipeline/results"
 
-QuickVariant_db: /home/data/CYM/pipeline/database/QuickVariant/merged_reference.fna
+kneaddata_db: /pipeline/database/kneaddata/hg_38
+contaminant_db_prefix: "hg_38"
+trimmomatic_path: /pipeline/database/trim_tools
+trimmomatic_options: 'SLIDINGWINDOW:4:20 MINLEN:50 LEADING:3 TRAILING:3'
+
 midasdb_name: localdb
-# midasv3_db: /home/data/CYM/pipeline/database/midasv3/gtdb
-midasv3_db: /home/data/CYM/software/MIDAS-3/tests/midasdb_localdb
-# GT_Pro_db: /home/data/CYM/pipeline/database/gt-pro/20190723_881species
-GT_Pro_db: /home/data/CYM/software/GT-Pro/gt-db/self_build/db_build/self_db
-# GT_dict_path: /home/data/CYM/pipeline/database/gt-pro/variants_main.covered.hq.snp_dict.tsv
-GT_dict_path: /home/data/CYM/software/GT-Pro/gt-db/self_build/db_build/self_db.snp_dict.tsv
-SGVFinder2_db: /home/data/CYM/pipeline/database/SGVFinder2/SV_db
-PhaseFinder_db: /home/data/CYM/pipeline/database/PhaseFinder/Phasefinder_reference.fasta
+midasv3_db: /pipeline/database/midasv3/midasdb_localdb
+
+GT_Pro_db: /pipeline/database/gt-pro/20190723_881species
+GT_dict_path: /pipeline/database/gt-pro/variants_main.covered.hq.snp_dict.tsv
+
+QuickVariant_db: /pipeline/database/QuickVariant/merged_reference.fna
+
+SGVFinder2_db: /pipeline/database/SGVFinder2/SV_db
+
+PhaseFinder_db: /pipeline/database/PhaseFinder/Phasefinder_reference.fasta
+
+annotation_file: /pipeline/database/43_species_features.tsv
+
+samples_tsv: "/pipeline/samples.tsv"
+
+sequencing_type: "PE"
+skip_qc: false
