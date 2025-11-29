@@ -1,0 +1,15 @@
+name: midasv3-full
+channels:
+  - conda-forge
+  - bioconda
+  - zhaoc1
+dependencies:
+  - python=3.9
+  - genomad
+  - midasv3
+  - ca-certificates
+  - certifi
+  - openssl
+  - resfinder
+  - mefinder
+  - eggnog-mapper
