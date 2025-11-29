@@ -3,18 +3,12 @@ import pyranges as pr
 import sys
 import logging
 
-# --- 0. 设置日志 ---
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[logging.StreamHandler(sys.stderr)]
 )
 log = logging.getLogger(__name__)
-
-# --- 1. 定义文件路径和列名常量 (将从 Snakemake 对象获取) ---
-# ANNOTATION_FILE = snakemake.input.annotation_file
-# VARIANT_MATRIX_FILE = snakemake.input.merged_inversion # 假设 snakemake input 名
-# OUTPUT_ANNOTATED_VARIANTS_FILE = snakemake.output.anno_inversion # 假设 snakemake output 名
 
 ALL_ANNOT_COLUMNS = [
     'genome_id', 'genome_name', 'accession', 'feature_type', 'patric_id',
@@ -38,7 +32,6 @@ def annotate_inversions(annotation_fp, inversion_matrix_fp, output_fp):
     log.info(f"Inversion matrix file: {inversion_matrix_fp}")
     log.info(f"Output file: {output_fp}")
 
-    # --- 2. 读取注释文件 ---
     log.info(f"Reading annotation file: {annotation_fp}")
     try:
         annot_df_dtypes = {col: str for col in ['genome_id', 'accession', 'patric_id', 'gene', 'strand', 'feature_type', 'product']}
@@ -56,7 +49,6 @@ def annotate_inversions(annotation_fp, inversion_matrix_fp, output_fp):
         log.error(f"Annotation file '{annotation_fp}' is missing required columns: {missing_annot_cols}")
         raise ValueError(f"Annotation file missing columns: {missing_annot_cols}")
 
-    # --- 2a. 创建 accession 到 genome_id 和 genome_name 的映射 ---
     try:
         accession_to_genome_info_map = annot_df_original.drop_duplicates(subset=['accession']) \
                                                         [['accession', 'genome_id', 'genome_name']] \
@@ -66,7 +58,6 @@ def annotate_inversions(annotation_fp, inversion_matrix_fp, output_fp):
         log.error(f"Error creating accession map: Missing column '{e}'. Needed: 'accession', 'genome_id', 'genome_name'.")
         raise
 
-    # --- 2b. 准备注释文件用于 PyRanges ---
     annot_df_for_pyranges = annot_df_original.copy()
     annot_df_for_pyranges.rename(columns={'accession': COL_CHROMOSOME,
                                           'start': COL_START_1B_FROM_ANNOT,
@@ -95,7 +86,6 @@ def annotate_inversions(annotation_fp, inversion_matrix_fp, output_fp):
         log.error(f"Error creating PyRanges object from annotation_df: {e}")
         raise
 
-    # --- 3. 读取并处理 Inversion 文件 ---
     log.info(f"Reading inversion matrix file: {inversion_matrix_fp}")
     try:
         inv_matrix_df = pd.read_csv(inversion_matrix_fp, sep='\t', dtype={'Site': str})
@@ -121,20 +111,7 @@ def annotate_inversions(annotation_fp, inversion_matrix_fp, output_fp):
             if len(coords) != 4:
                 log.warning(f"Site string '{site_str}' does not have 4 coordinate parts. Skipping.")
                 continue
-            
-            # Inversion region is between the two inverted repeats
-            # Your definition: END1 (coords[1]) and START2 (coords[2]) are the boundaries (1-based inclusive)
-            # For PyRanges (0-based, half-open [Start, End) ):
-            # Start = END1 - 1
-            # End = START2
-            # However, if you mean the region *between* END1 and START2, then:
-            # Start = END1 (which is coords[1], 0-based would be coords[1])
-            # End = START2 -1 (which is coords[2]-1, 0-based would be coords[2]-1)
-            # Let's stick to your definition: "起始终止位点选取：182954和183130"
-            # This means for site ADLE01000001:182930-182954-183130-183154,
-            # inversion_start_1based = 182954 (coords[1])
-            # inversion_end_1based   = 183130 (coords[2])
-            
+      
             inversion_start_1based = coords[1] # This is END1
             inversion_end_1based = coords[2]   # This is START2
 
@@ -168,13 +145,11 @@ def annotate_inversions(annotation_fp, inversion_matrix_fp, output_fp):
         log.error(f"Error creating PyRanges object from inversions_df: {e}")
         raise
 
-    # --- 4. 使用 pyranges.join() 进行注释 ---
     log.info("Performing interval-based join to annotate inversions...")
     annotated_gr = gr_variants.join(gr_annotations, how='left', suffix='_annot', apply_strand_suffix=False)
     annotated_result_df = annotated_gr.df
     log.info(f"Interval join complete. Result shape: {annotated_result_df.shape}")
 
-    # --- 5. 整理输出结果 ---
     log.info("Formatting final output...")
     final_output_list = []
 
