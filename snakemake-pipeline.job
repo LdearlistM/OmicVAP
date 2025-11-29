@@ -1,14 +1,17 @@
 #!/bin/bash
-#SBATCH --job-name=snakemake-pipeline
+#SBATCH --job-name=xmetavat-test
 #SBATCH -N 1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
-#SBATCH -o sp.%j.out
-#SBATCH -e sp.%j.err
+#SBATCH -o xt.%j.out
+#SBATCH -e xt.%j.err
 
 source ~/.bashrc
-source activate snakemake
 
-cd /home/data/CYM/pipeline/
-
-snakemake --use-conda --use-singularity --cores 16 --verbose --singularity-args '-B /home/data/CYM/pipeline/database/SGVFinder/db_path:/opt/SGVFinder/src/db_path'
+docker run --rm \
+  -v "/localpath/to/rawdata:/pipeline/rawdata:ro" \
+  -v "/localpath/to/results:/pipeline/results:rw" \
+  -v "/localpath/to/config.yaml:/pipeline/config.yaml:ro" \
+  -v "/localpath/to/samples.tsv:/pipeline/samples.tsv:ro" \
+  -v "/localpath/to/database:/pipeline/database:rw" \
+  xmetavar:1.0.0 all --cores 16
