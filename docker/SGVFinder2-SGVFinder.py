@@ -2,10 +2,8 @@ import sys
 from SGVFinder2 import work_on_collection
 import pandas as pd
 
-# 获取外部输入路径
 samp_to_map = sys.argv[1]
 output_dir = sys.argv[2]
-# DATABASE = '/public/home/bdpguest/jiaona/software/SGVFinder2/SGVFinder2/UC-reference'
 DATABASE = '/home/data/CYM/pipeline/05-variant-calling/SV/db/SV_db'
 
 vsgv, dsgv = work_on_collection(
@@ -22,7 +20,6 @@ vsgv, dsgv = work_on_collection(
     x_coverage=0.01,
     rate_param=10, 
     vsgv_dense_perc=85, 
-    # browser_path="/home/data/CYM/pipeline/05-variant-calling/SV/result",
     browser_path=None, 
     taxonomypath=DATABASE+'.taxonomy.df',
     genepospath=DATABASE+'genepos.df',
