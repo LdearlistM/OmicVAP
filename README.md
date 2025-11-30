@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/user-attachments/assets/e94f0aee-41f2-4e23-9298-dfef220df643" width="180" alt="xMetaVar Logo">
+<img src="./images/graphabstract.png" width="500" alt="xMetaVar Logo">
 
 # xMetaVar: A Systematic Platform for Strain-Level Microbial Variants
 
