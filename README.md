@@ -1,51 +1,155 @@
 <div align="center">
 
-<!-- 1. Logo 和 标题区域 -->
-<img src="https://github.com/user-attachments/assets/e94f0aee-41f2-4e23-9298-dfef220df643" width="200" alt="xMetaVar Logo">
+<img src="https://github.com/user-attachments/assets/e94f0aee-41f2-4e23-9298-dfef220df643" width="180" alt="xMetaVar Logo">
 
-# xMetaVar
+# xMetaVar: A Systematic Platform for Strain-Level Microbial Variants
 
-<!-- 2. 副标题（我们之前定的那个） -->
-### A Systematic Web Platform for Integrated Analysis of Strain-Level Microbial Variants
-
-<!-- 3. 徽章区域 (Badges) - 显得专业 -->
 [![Docker Image Version](https://img.shields.io/badge/docker-v1.0.0-blue)](https://github.com/ldearlistm/xmetavar/pkgs/container/xmetavar)
+[![Website](https://img.shields.io/badge/Web_Server-Available-green)](https://www.biosino.org/iMAC/xmetavar)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Website](https://img.shields.io/badge/Website-Online-green)](https://www.biosino.org/iMAC/xmetavar)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-
-[**Web Server**](https://www.biosino.org/iMAC/xmetavar) | [**Docker Hub**](https://github.com/ldearlistm/xmetavar/pkgs/container/xmetavar) | [**Documentation**](https://github.com/ldearlistm/xmetavar/wiki)
 
 </div>
 
 ---
 
-<!-- 4. 简介 (使用之前润色的第一段) -->
 ## 📖 Introduction
 
-**xMetaVar** is the first systematic web-based one-stop platform that provides integrated calling and biological interpretation of multiple types of **strain-level microbial variants** (SNPs, short INDELs, and diverse structural variants) directly from metagenomic sequencing data.
+**xMetaVar** is a systematic one-stop platform for the integrated calling and biological interpretation of multiple types of **strain-level microbial variants** (SNPs, short INDELs, and structural variants) directly from metagenomic sequencing data.
 
-The platform is built upon a **unified reference panel of 43 core human-gut species**, systematically curated from >13,000 metagenomes to ensure broad prevalence and high precision. No upstream variant files or complex installation are required, making it accessible to both computational and experimental microbiologists.
+While we provide a user-friendly [**Web Server**](https://www.biosino.org/iMAC/xmetavar) for immediate analysis without installation, this repository hosts the documentation for the **Docker-based command-line workflow**, enabling high-throughput analysis on local servers or HPC clusters.
 
-<!-- 5. 核心特性 (列点展示) -->
-## ✨ Key Features
+The pipeline integrates five optimized callers (GT-Pro, MIDAS, QuickVariant, SGVFinder, PhaseFinder) to seamlessly cover:
+*   **SNPs**: Single Nucleotide Polymorphisms
+*   **INDELs**: Short Insertions and Deletions
+*   **SVs**: Structural Variants (dSVs, vSVs, Inversions, CNVs)
 
-- **🌐 Fully Web-based**: No installation required. Analyze 30–50 samples (~300GB) in 4–8 hours using free cloud resources.
-- **🧬 Multi-type Variant Calling**: Simultaneous detection of SNPs, Indels, and SVs (dSVs, vSVs, Inversions, CNVs) using 5 optimized callers.
-- **📊 Interactive Visualization**: Powered by modules for variant-based population ordinations, stratified compositions, and phenotype-genotype association landscapes.
-- **🤖 Machine Learning Integration**: Automated biomarker selection and classifier construction with interpretable outputs (SHAP/ROC).
-- **🔒 Privacy First**: No tracking cookies, no login requirement, and full data privacy.
+## ⚡ Quick Links
+- [Web Server (No installation required)](https://www.biosino.org/iMAC/xmetavar)
+- [Web Tutorial & Visualization Guide](https://www.biosino.org/iMAC/xmetavar/tutorial)
+- [Docker Hub / Packages](https://github.com/ldearlistm/xmetavar/pkgs/container/xmetavar)
 
 ---
 
-<!-- 6. 快速开始 (提供 Docker 用法) -->
-## 🚀 Quick Start (Docker)
+## 🛠️ Installation
 
-If you prefer running the pipeline locally instead of using the [Web Server](https://www.biosino.org/iMAC/xmetavar), you can pull our pre-built Docker image:
+### Hardware Requirements
+The pipeline is designed to run on standard Linux servers. 
+- **CPU**: 16+ cores recommended for parallel processing.
+- **RAM**: 32GB+ (64GB+ recommended for large cohorts).
+- **Disk**: Sufficient storage for raw FASTQ files and reference databases (~50GB for the core database).
+
+### Docker Image
+We provide a pre-built Docker image containing all dependencies (Snakemake, Python envs, Bioinformatics tools). You do not need to install the tools individually.
 
 ```bash
-# Pull the image from GitHub Container Registry
+# Pull the latest image
 docker pull ghcr.io/ldearlistm/xmetavar:1.0.0
+```
 
-# Run the container (Example)
-docker run -it ghcr.io/ldearlistm/xmetavar:1.0.0 /bin/bash
+---
+
+## 🚀 Usage (Local / Docker)
+
+To run xMetaVar locally, you need to prepare your input files and mount them into the Docker container.
+
+### 1. Data Preparation
+Organize your project directory as follows:
+
+```text
+my_project/
+├── rawdata/               # Directory containing your .fastq.gz files
+├── database/              # Directory containing the reference panel
+├── output/                # Directory for results (will be created)
+├── samples.tsv            # Sample list
+└── config.yaml            # Pipeline configuration
+```
+
+#### The `samples.tsv`
+A tab-separated file listing your sample IDs (one per line).
+```text
+SampleA
+SampleB
+SampleC
+```
+
+#### The `config.yaml`
+Standard Snakemake configuration file. Ensure parameters match your analysis needs (e.g., read length, trim settings).
+
+### 2. Custom Reference Database
+By default, the pipeline requires a reference panel (e.g., the 43 core human-gut species panel provided by xMetaVar). If you wish to use a custom database or the standard xMetaVar database locally, ensure the `database/` folder contains the necessary indexed files for Bowtie2, GT-Pro, and MIDAS.
+
+> **Note:** You can download our pre-compiled core database from the [Web Server Resources](https://www.biosino.org/iMAC/xmetavar/download) (if applicable) or construct your own following the tool-specific indexing requirements.
+
+### 3. Running the Pipeline
+Use `docker run` to execute the workflow. You must mount your local directories to the specific paths inside the container:
+
+| Local Path | Container Path | Description |
+| :--- | :--- | :--- |
+| `/path/to/rawdata` | `/pipeline/rawdata` | Input FASTQ files (Read Only) |
+| `/path/to/output` | `/pipeline/results` | Output directory (Read/Write) |
+| `/path/to/database` | `/pipeline/database` | Reference Database (Read/Write) |
+| `/path/to/config.yaml` | `/pipeline/config.yaml` | Configuration file |
+| `/path/to/samples.tsv` | `/pipeline/samples.tsv` | Sample list |
+
+#### Example Command (Run All Modules)
+```bash
+docker run --rm \
+  -v "$(pwd)/rawdata:/pipeline/rawdata:ro" \
+  -v "$(pwd)/output:/pipeline/results:rw" \
+  -v "$(pwd)/config.yaml:/pipeline/config.yaml:ro" \
+  -v "$(pwd)/samples.tsv:/pipeline/samples.tsv:ro" \
+  -v "$(pwd)/database:/pipeline/database:rw" \
+  ghcr.io/ldearlistm/xmetavar:1.0.0 all --cores 16
+```
+
+### 4. Modular Analysis
+You can run specific modules by replacing `all` with specific target keywords:
+
+| Keyword | Description | Tools Used |
+| :--- | :--- | :--- |
+| `snp_gtpro` | Rapid SNP genotyping | GT-Pro |
+| `snp_midas` | High-precision SNP calling | MIDAS v3 |
+| `indel` | Short INDEL detection | QuickVariants |
+| `sv_sgvfinder` | Deletion & Variable SVs | SGVFinder |
+| `sv_inversion` | Inversion detection | PhaseFinder |
+| `sv_midas` | CNV (Copy Number Variation) | MIDAS v3 |
+| **`all`** | **Run full pipeline** | **All of above** |
+
+**Example: Running only INDEL and SV analysis**
+```bash
+docker run --rm [mount arguments...] ghcr.io/ldearlistm/xmetavar:1.0.0 indel sv_sgvfinder --cores 8
+```
+
+---
+
+## 📂 Output Files
+
+Upon successful execution, the results will be organized in the `output/02-variant-calling` directory (mapped from container). Key output files include:
+
+*   **SNPs**: 
+    *   `SNP/GT-Pro/across-sample/snp.tsv`
+    *   `SNP/MIDAS/across_sample/snps/snps_summary.tsv`
+*   **INDELs**:
+    *   `INDEL/across-sample/indel_anno.tsv` (Annotation)
+    *   `INDEL/across-sample/indels.tsv` (Presence/Absence Matrix)
+*   **Structural Variants**:
+    *   `SV/dSV-vSV/across-sample/dsgv_anno.tsv` (SGVFinder Results)
+    *   `SV/Inversion/across-sample/inversion_anno.tsv` (Inversions)
+    *   `SV/CNV/across_sample/merge.genes_copynum.tsv` (Copy Number)
+
+For detailed visualization of these results (Heatmaps, PCoA, Genome Browser), we highly recommend uploading these output matrices to the **[xMetaVar Web Server Visualization Module](https://www.biosino.org/iMAC/xmetavar)**.
+
+---
+
+## 📚 Citation
+
+If you use xMetaVar in your research, please cite:
+
+> *[Authors]. xMetaVar: A Systematic Web Platform for Integrated Analysis of Strain-Level Microbial Variants. [Journal Name]. [Year];[Volume]:[Pages]. DOI: ...*
+
+(Citation will be updated upon publication)
+
+## 📧 Contact & Support
+
+*   **Issues:** Please report bugs via the [GitHub Issues](https://github.com/ldearlistm/xmetavar/issues) page.
+*   **Web Server:** https://www.biosino.org/iMAC/xmetavar
